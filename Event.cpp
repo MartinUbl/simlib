@@ -108,6 +108,10 @@ void SimEvent::Run()
     }
 
     AfterExecute();
+
+    // destroy event object, if not rescheduled (or not scheduled periodically)
+    if (!HasPeriodicSchedule() && !GetCurrentCalendar())
+        Terminate();
 }
 
 void SimEvent::PerformCriteriaSelection(SimulationObjectList& objList, SelectionCriteria& crit)
