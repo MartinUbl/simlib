@@ -50,6 +50,8 @@ class SimEvent : public SimulationObject
         // run event execution; select objects and execute on them
         void Run() override final;
 
+        // filters objects before execution; empty implementation here, may be overriden
+        virtual void FilterObjects(SimulationObjectList& objectList);
         // called before event execution on all selected objects
         virtual void BeforeExecute();
         // called after event execution on all selected objects

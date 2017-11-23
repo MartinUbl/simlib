@@ -94,6 +94,9 @@ void SimEvent::Run()
     else // if no criterias at all - select all objects
         objlist = simulation->GetAllObjects();
 
+    // call user-defined filters
+    FilterObjects(objlist);
+
     // now we are ready!
 
     BeforeExecute();
@@ -182,6 +185,11 @@ void SimEvent::PerformModeSelection(SimulationObjectList& objList, SelectionCrit
             break;
         }
     }
+}
+
+void SimEvent::FilterObjects(SimulationObjectList& objectList)
+{
+    //
 }
 
 void SimEvent::BeforeExecute()
