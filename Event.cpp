@@ -119,18 +119,22 @@ void SimEvent::Run()
 
 void SimEvent::PerformCriteriaSelection(SimulationObjectList& objList, SelectionCriteria& crit)
 {
+    auto itr = objList.begin();
+
     switch (crit.criteria)
     {
         case ObjectSelectionCriteria::GUID:
-            std::remove_if(objList.begin(), objList.end(), [=](SimulationObjectPtr obj) { return obj->GetGUID() != crit.critParam.asUInt64; });
+            itr = std::remove_if(objList.begin(), objList.end(), [=](SimulationObjectPtr obj) { return obj->GetGUID() != crit.critParam.asUInt64; });
             break;
         case ObjectSelectionCriteria::TYPE:
-            std::remove_if(objList.begin(), objList.end(), [=](SimulationObjectPtr obj) { return obj->GetType() != crit.critParam.asSimType; });
+            itr = std::remove_if(objList.begin(), objList.end(), [=](SimulationObjectPtr obj) { return obj->GetType() != crit.critParam.asSimType; });
             break;
         case ObjectSelectionCriteria::CLASS:
-            std::remove_if(objList.begin(), objList.end(), [=](SimulationObjectPtr obj) { return obj->GetObjectClass() != crit.critParam.asUInt32; });
+            itr = std::remove_if(objList.begin(), objList.end(), [=](SimulationObjectPtr obj) { return obj->GetObjectClass() != crit.critParam.asUInt32; });
             break;
     }
+
+    objList.erase(itr, objList.end());
 }
 
 void SimEvent::PerformModeSelection(SimulationObjectList& objList, SelectionCriteria& crit)
@@ -141,8 +145,11 @@ void SimEvent::PerformModeSelection(SimulationObjectList& objList, SelectionCrit
             break;
         case ObjectSelectionMode::ONE:
         {
+            if (objList.size() <= 1)
+                return;
+
             // generate random index (will be used)
-            std::uniform_int_distribution<size_t> indexRandDist(0, objList.size());
+            std::uniform_int_distribution<size_t> indexRandDist(0, objList.size() - 1);
             size_t i = indexRandDist(m_randomEngine);
 
             // move iterator to that "index"
