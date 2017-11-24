@@ -66,13 +66,15 @@ class Simulation : public std::enable_shared_from_this<Simulation>
 
         // creates object using standard templated approach; the object needs to be child of SimulationObject
         template<typename T>
-        typename std::enable_if<std::is_base_of<SimulationObject, T>::value, SimulationObjectPtr>::type
+        typename std::enable_if<std::is_base_of<SimulationObject, T>::value, std::shared_ptr<T>>::type
         CreateObject(uint32_t objectClass = ObjectClass_NotSpecified)
         {
             SimulationPtr self = (SimulationPtr)shared_from_this();
 
             auto ptr = std::make_shared<T>();
-            ptr->SetObjectClass(objectClass);
+            // override class setting only if the object didn't specify its own in constructor
+            if (ptr->GetObjectClass() == ObjectClass_NotSpecified)
+                ptr->SetObjectClass(objectClass);
             ptr->SetSimulation(self);
             AddObject(ptr);
 
