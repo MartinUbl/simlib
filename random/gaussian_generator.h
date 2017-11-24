@@ -7,6 +7,7 @@
 #pragma once
 
 #include "base_generator.h"
+#include <cmath>
 
 /*
  * Normal (gaussian) distribution generator using specified parameters
@@ -19,7 +20,7 @@ class gaussian_generator : public base_generator<T>
 
         virtual T operator()() override
         {
-            return static_cast<T>(m_dist(m_engine));
+            return static_cast<T>(round(m_dist(m_engine)));
         }
 
         // reinitializes distribution with new parameters
@@ -32,3 +33,17 @@ class gaussian_generator : public base_generator<T>
         // encapsulated standard library distribution generator
         std::normal_distribution<double> m_dist;
 };
+
+// explicitly specializate generators for double and float, to not round the result
+
+template <>
+double gaussian_generator<double>::operator()()
+{
+    return static_cast<double>(m_dist(m_engine));
+}
+
+template <>
+float gaussian_generator<float>::operator()()
+{
+    return static_cast<float>(m_dist(m_engine));
+}
