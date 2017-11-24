@@ -51,7 +51,7 @@ void Simulation::Setup(CalendarPtr mainCalendar)
 {
     m_calendarList.push_back(mainCalendar);
 
-    m_logger << "Setting up simulation" << Logger::endl();
+    m_logger(GetSimulationTime()) << "Setting up simulation";
 }
 
 void Simulation::AddCalendar(CalendarPtr nextCalendar)
@@ -84,6 +84,8 @@ void Simulation::Terminate(int64_t exitCode)
 
     m_running = false;
     m_exitCode = exitCode;
+
+    m_logger(GetSimulationTime()) << "Simulation termination requested with code " << m_exitCode;
 }
 
 int64_t Simulation::Run()
@@ -103,7 +105,7 @@ int64_t Simulation::Run()
         // if stepped simulation mode is selected, wait for key press every step
         if (m_simMode == SimulationMode::STEPPED)
         {
-            m_logger << "Step: " << step << Logger::endl();
+            m_logger(GetSimulationTime()) << "Step: " << step;
             std::cin.get();
         }
 
@@ -114,7 +116,7 @@ int64_t Simulation::Run()
         // set current simulation time
         m_simulationTime = obj->GetNextSimTime();
 
-        m_logger << "Object " << obj->GetGUID() << " fired at " << obj->GetNextSimTime() << Logger::endl();
+        m_logger(GetSimulationTime()) << "Object " << obj->GetGUID() << " (type: " << static_cast<int>(obj->GetType()) << ", class: " << obj->GetObjectClass() << ") fired";
 
         // run scope
         {
@@ -146,7 +148,7 @@ uint64_t Simulation::AddObject(SimulationObjectPtr object)
     m_objectTypeMap[object->GetType()].push_back(object);
     m_objectClassMap[object->GetObjectClass()].push_back(object);
 
-    m_logger << "Adding object (GUID: " << m_guidNext << ", type: " << (int)object->GetType() << ", class: " << object->GetObjectClass() << ")" << Logger::endl();
+    m_logger(GetSimulationTime()) << "Adding object (GUID: " << m_guidNext << ", type: " << static_cast<int>(object->GetType()) << ", class: " << object->GetObjectClass() << ")";
 
     return m_guidNext++;
 }
@@ -164,6 +166,8 @@ void Simulation::RemoveObjectFromList(SimulationObjectList& simList, SimulationO
 
 void Simulation::RemoveObject(SimulationObjectPtr object)
 {
+    m_logger(GetSimulationTime()) << "Removing object (GUID: " << object->GetGUID() << ", type: " << static_cast<int>(object->GetType()) << ", class: " << object->GetObjectClass() << ")";
+
     if (m_objectGuidMap.find(object->GetGUID()) != m_objectGuidMap.end())
         m_objectGuidMap.erase(object->GetGUID());
 
