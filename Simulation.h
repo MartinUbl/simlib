@@ -59,7 +59,9 @@ class Simulation : public std::enable_shared_from_this<Simulation>
         // is the simulation running?
         bool IsRunning() const;
         // terminates simulation with given exit code
-        void Terminate(int64_t exitCode = SimulationExitCode_OK);
+        void Terminate(int64_t exitCode = SimulationExitCode_OK, SimulationObjectPtr initiator = nullptr);
+        // retrieves object, that initiated simulation termination
+        SimulationObjectPtr GetTerminateInitiator() const;
 
         // adds an object to simulation, assigns GUID and returns it
         uint64_t AddObject(SimulationObjectPtr object);
@@ -128,6 +130,8 @@ class Simulation : public std::enable_shared_from_this<Simulation>
 
         // simulation "exit code"
         int64_t m_exitCode;
+        // initiator of termination
+        SimulationObjectPtr m_exitInitiator;
         // is the simulation still running?
         bool m_running;
 

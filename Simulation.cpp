@@ -77,15 +77,21 @@ bool Simulation::IsRunning() const
     return m_running;
 }
 
-void Simulation::Terminate(int64_t exitCode)
+void Simulation::Terminate(int64_t exitCode, SimulationObjectPtr initiator)
 {
     if (!IsRunning())
         return;
 
     m_running = false;
     m_exitCode = exitCode;
+    m_exitInitiator = initiator;
 
     m_logger(GetSimulationTime()) << "Simulation termination requested with code " << m_exitCode;
+}
+
+SimulationObjectPtr Simulation::GetTerminateInitiator() const
+{
+    return m_exitInitiator;
 }
 
 int64_t Simulation::Run()
